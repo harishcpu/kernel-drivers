@@ -1,0 +1,15 @@
+The Linux Kernel documentation:
+This is the top level of the kernel’s documentation tree. Kernel documentation, like the kernel itself, is very much a work in progress; that is especially true as we work to integrate our many scattered documents into a coherent whole. Please note that improvements to the documentation are welcome; join the linux-doc list at vger.kernel.org if you want to help out.
+
+Licensing documentation:
+The following describes the license of the Linux kernel source code (GPLv2), how to properly mark the license of individual files in the source tree, as well as links to the full license text.
+
+Graphs:
+_DSD:
+_DSD (Device Specific Data) [dsd-guide] is a predefined ACPI device configuration object that can be used to convey information on hardware features which are not specifically covered by the ACPI specification [acpi]. There are two _DSD extensions that are relevant for graphs: property [dsd-guide] and hierarchical data extensions. The property extension provides generic key-value pairs whereas the hierarchical data extension supports nodes with references to other nodes, forming a tree. The nodes in the tree may contain properties as defined by the property extension. The two extensions together provide a tree-like structure with zero or more properties (key-value pairs) in each node of the tree.
+
+The data structure may be accessed at runtime by using the device_* and fwnode_* functions defined in include/linux/fwnode.h .
+
+Fwnode represents a generic firmware node object. It is independent on the firmware type. In ACPI, fwnodes are _DSD hierarchical data extensions objects. A device’s _DSD object is represented by an fwnode.
+
+The data structure may be referenced to elsewhere in the ACPI tables by using a hard reference to the device itself and an index to the hierarchical data extension array on each depth.
