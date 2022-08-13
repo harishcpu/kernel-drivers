@@ -39,16 +39,17 @@ show_max_size (struct device *dev,
 
 ssize_t 
 show_serial_number (struct device *dev, 
-                           struct device_attribute *attr,
-                           char *buf) {
+        struct device_attribute *attr,
+        char *buf) {
     /* get access to the device private data */
-  //  struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+    struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
 
-  //  if(!dev_data) {
- //       pr_info("null reference by dev_data, %p\n", dev_data);
- //       return 0;
-  //  }
-   // sprintf(buf, "%s\n", dev_data->pdata.serial_number);
+    if(!dev_data) {
+        pr_info("null reference by dev_data, %p\n", dev_data);
+        return 0;
+    }
+    sprintf(buf, "%s\n", dev_data->pdata.serial_number);
+    pr_info("harish: %s\n", buf);
 
     return 0;
 }
@@ -78,6 +79,7 @@ int pcd_platform_driver_probe (struct platform_device *pdev) {
     u32 ret;
     struct pcdev_private_data *dev_data;
     struct pcdev_platform_data *pdata;
+    struct device *dev = &pdev->dev;
 
     pr_info("A device is detected\n");
 
@@ -130,7 +132,7 @@ int pcd_platform_driver_probe (struct platform_device *pdev) {
         return ret; 
     }
     /* 6. Create device file for the detected platform device */
-    pcdrv_data.device_pcd = device_create(pcdrv_data.class_pcd, NULL, dev_data->device_number, NULL, "pcdev-%d", pdev->id);
+    pcdrv_data.device_pcd = device_create(pcdrv_data.class_pcd, dev, dev_data->device_number, NULL, "pcdev-%d", pdev->id);
     if(IS_ERR(pcdrv_data.device_pcd)) {
         pr_err("device create failed\n");
         ret = PTR_ERR(pcdrv_data.device_pcd);
@@ -144,7 +146,6 @@ int pcd_platform_driver_probe (struct platform_device *pdev) {
         device_destroy(pcdrv_data.class_pcd, dev_data->device_number);
         return ret;
     }
-
 
     pr_info("Probe was successful\n");
     return 0;
