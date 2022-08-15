@@ -83,12 +83,25 @@ store_max_size (struct device *dev,
 static DEVICE_ATTR(max_size, S_IRUGO|S_IWUSR, show_max_size, store_max_size);
 static DEVICE_ATTR(serial_number, S_IRUGO, show_serial_number, NULL);
 
+struct attribute *pcd_attrs[] = {
+    &dev_attr_max_size.attr,
+    &dev_attr_serial_number.attr,
+    NULL
+};
+
+struct attribute_group pcd_attr_group = {
+    .attrs = pcd_attrs
+};
+
 int pcd_sysfs_create_file(struct device *pcd_dev) {
+#if 0
     int ret = sysfs_create_file(&pcd_dev->kobj, &dev_attr_max_size.attr);
     if(ret)
         return ret;
     
    return sysfs_create_file(&pcd_dev->kobj, &dev_attr_serial_number.attr);
+#endif
+   return sysfs_create_group(&pcd_dev->kobj, &pcd_attr_group);
 }
 
 /* Gets called when matched platform device is found */
