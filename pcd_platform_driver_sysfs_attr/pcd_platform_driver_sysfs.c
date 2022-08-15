@@ -34,7 +34,14 @@ ssize_t
 show_max_size (struct device *dev, 
                struct device_attribute *attr,
                char *buf) {
-    return 0;
+    /* get access to the device private data */
+    struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+
+    if(!dev_data) {
+        pr_info("null reference by dev_data, %p\n", dev_data);
+        return 0;
+    }
+    return sprintf(buf, "%d\n", dev_data->pdata.size);
 }
 
 ssize_t 
@@ -48,10 +55,7 @@ show_serial_number (struct device *dev,
         pr_info("null reference by dev_data, %p\n", dev_data);
         return 0;
     }
-    sprintf(buf, "%s\n", dev_data->pdata.serial_number);
-    pr_info("harish: %s\n", buf);
-
-    return 0;
+    return sprintf(buf, "%s\n", dev_data->pdata.serial_number);
 }
 
 ssize_t 
@@ -59,7 +63,20 @@ store_max_size (struct device *dev,
                         struct device_attribute *attr,
                         const char *buf, 
                         size_t count) {
-    return 0;
+    long result;
+    int ret;
+    struct pcdev_private_data *dev_data = dev_get_drvdata(dev->parent);
+
+    ret = kstrtol(buf, 10, &result);
+    if(ret){
+        return ret;
+    }
+
+    dev_data->pdata.size = result;
+
+    dev_data->buffer = krealloc(dev_data->buffer, dev_data->pdata.size, GFP_KERNEL);
+
+    return count;
 }
 
 /* create 2 variables of struct device_attribute */
